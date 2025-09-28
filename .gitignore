@@ -1,0 +1,19 @@
+# txAdmin data & cache
+txData/
+cache/
+logs/
+crashes/
+
+# configs/segredos locais
+server.cfg
+.env
+*.key
+
+# banco/dumps
+*.sql
+*.dump
+
+# SO / editor
+.DS_Store
+Thumbs.db
+.vscode/

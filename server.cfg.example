@@ -1,0 +1,64 @@
+# =========================================================
+# Example server.cfg for QBCore
+# =========================================================
+
+## Licença FiveM (obrigatório)
+sv_licenseKey "PASTE_YOUR_KEY_HERE"
+
+## Nome e descrição do servidor
+sv_hostname "[QBCore] Meu Servidor Exemplo"
+sets sv_projectName "[QBCore Framework] Meu RP"
+sets sv_projectDesc "Servidor Roleplay com base no QBCore"
+sets locale "pt-BR"
+setr qb_locale "pt-br"
+
+## Slots e rede
+sv_maxclients 48
+endpoint_add_tcp "0.0.0.0:30120"
+endpoint_add_udp "0.0.0.0:30120"
+sv_enforceGameBuild 3095
+sets tags "qbcore,qb-core,roleplay,br"
+
+## API Steam (opcional, para recursos que usam Steam)
+set steam_webApiKey "PASTE_STEAM_KEY_IF_USED"
+
+## Conexão com banco de dados (MariaDB/MySQL)
+# ⚠️ Ajuste usuário/senha conforme sua config local.
+# Exemplo: mysql://qbcore:SENHA_FORTE@127.0.0.1/qbcore?charset=utf8mb4
+set mysql_connection_string "mysql://USUARIO:SENHA@127.0.0.1/qbcore?charset=utf8mb4"
+
+## Voz
+setr voice_useNativeAudio true
+setr voice_useSendingRangeOnly true
+setr voice_defaultCycle "GRAVE"
+setr voice_defaultVolume 0.3
+setr voice_enableRadioAnim 1
+setr voice_syncData 1
+
+## Recursos básicos (não edite sem saber)
+ensure mapmanager
+ensure chat
+ensure spawnmanager
+ensure sessionmanager
+ensure basic-gamemode
+ensure hardcap
+ensure baseevents
+
+## Framework QBCore + dependências
+ensure oxmysql
+ensure qb-core
+ensure qb-smallresources
+ensure qb-weathersync
+ensure qb-appearance
+ensure qb-spawn
+ensure qb-apartments
+ensure qb-loading
+ensure [qb]
+ensure [standalone]
+ensure [voice]
+ensure [defaultmaps]
+
+## Permissões
+add_ace group.admin command allow
+# Exemplo: dar admin pro seu license ID
+# add_principal identifier.license:SEU_LICENSE_ID group.admin

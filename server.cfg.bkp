@@ -1,0 +1,93 @@
+#   ____  ____   _____
+#  / __ \|  _ \ / ____|
+# | |  | | |_) | |     ___  _ __ ___
+# | |  | |  _ <| |    / _ \| '__/ _ \
+# | |__| | |_) | |___| (_) | | |  __/
+#  \___\_\____/ \_____\___/|_|  \___|
+
+## FiveM Documentation
+## https://aka.cfx.re/server-commands
+## QBCore Documentation
+## https://docs.qbcore.org
+
+## ====== Rede / slots / tags ======
+endpoint_add_tcp "0.0.0.0:30120"
+endpoint_add_udp "0.0.0.0:30120"
+sv_maxclients 48
+set steam_webApiKey "none"
+sets tags "default, deployer, qbcore, qb-core"
+
+## ====== Identidade do servidor ======
+# ⚠️ Gire sua key no Keymaster e cole aqui:
+sv_licenseKey "cfxk_1fjN6RIc6DbrwZaKB6ikf_4HE4sw"
+
+sv_hostname "teste0101 built with QBCore Framework by JericoFx & Kakarot & Hamy!"
+sets sv_projectName "[QBCore Framework] teste0101"
+sets sv_projectDesc "An advanced FiveM RP framework including jobs, gangs, housing & more!"
+sets locale "root-AQ"              # mantido como você enviou
+load_server_icon myLogo.png        # mantenha o arquivo na raiz, senão remova
+sv_enforceGameBuild 3095           # DLC The Chop Shop
+set resources_useSystemChat true
+
+## ====== Banco de Dados ======
+set mysql_connection_string "mysql://qbcore:S3nha.QBCore!@127.0.0.1/qbcore?charset=utf8mb4"
+
+## ====== Voz (PMA-Voice) ======
+setr voice_useNativeAudio true
+setr voice_useSendingRangeOnly true
+setr voice_defaultCycle "GRAVE"
+setr voice_defaultVolume 0.3
+setr voice_enableRadioAnim 1
+setr voice_syncData 1
+
+## ====== QBCore Config ======
+setr qb_locale "en"                # mantido como você enviou (inglês)
+setr UseTarget false
+
+## ====== Recursos padrão FiveM ======
+ensure mapmanager
+ensure chat
+ensure spawnmanager
+ensure sessionmanager
+ensure basic-gamemode
+ensure hardcap
+ensure baseevents
+
+## ====== Standalone / dependências ======
+# (garanta oxmysql antes do qb-core)
+ensure oxmysql
+ensure [standalone]
+ensure [voice]
+
+## ====== QBCore e coleções ======
+ensure qb-core
+ensure qb-smallresources
+ensure qb-weathersync
+ensure qb-appearance
+ensure qb-spawn
+ensure qb-apartments
+ensure qb-loading
+ensure [qb]
+
+## ====== Mapas padrão (opcional) ======
+ensure [defaultmaps]
+
+## ====== Permissões ======
+add_ace group.admin command allow               # allow all commands
+
+# Seu identificador já enviado:
+add_principal identifier.fivem:15556773 group.admin  # Gustavo_Berioni
+# Permissão de admin para LettoMors
+add_principal identifier.license:71613a1e399ed7b0e82a0c4e89624e523ba86fc6 group.admin
+
+# (Opcional, mas recomendado) também adicionar o license:
+# add_principal identifier.license:COLOQUE_SEU_LICENSE_AQUI group.admin
+
+# Resources & grupos do QBCore
+add_ace resource.qb-core command allow          # Allow qb-core to execute commands
+add_ace qbcore.god command allow                # Allow all commands
+
+# Inheritance
+add_principal qbcore.god group.admin            # gods -> admin
+add_principal qbcore.god qbcore.admin           # gods -> qbcore.admin
+add_principal qbcore.admin qbcore.mod           # admin -> mod
