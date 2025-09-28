@@ -281,6 +281,8 @@ RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
             QBCore.Functions.Notify(Lang:t('notify.vlockpick'), 'success')
             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
         end
+        -- ALERTA COM CHANCE + WANTED (mesmo no sucesso)
+        SetTimeout(500, function() AttemptPoliceAlert('steal') end)
     else
         AttemptPoliceAlert('steal')
     end
@@ -713,9 +715,29 @@ function AttemptPoliceAlert(type)
     if GetClockHours() >= 1 and GetClockHours() <= 6 then
         chance = Config.PoliceNightAlertChance
     end
+
     if math.random() <= chance then
+        -- 1) Seu alerta existente (dispatcher, som etc):
         TriggerServerEvent('police:server:policeAlert', Lang:t('info.palert') .. type)
+
+        -- 2) Subir procurado no npc-police:
+        local crime = 'car_theft'
+        if type == 'carjack' then
+            crime = 'carjacking'
+        elseif type == 'steal' then
+            crime = 'car_theft'
+        end
+
+        -- API simples:
+        -- TriggerServerEvent('police:server:reportCrime', crime)
+
+        -- Controle fino (+1 por 180s):
+        --TriggerServerEvent('police:server:addWanted', nil, 1, crime, 180)
+
+        -- DE: TriggerServerEvent('police:server:addWanted', nil, 1, crime, 180)
+TriggerServerEvent('police:server:addWanted', 1, crime, 180)  -- amount=1, crime, decay=180s
     end
+
     AlertSend = true
     SetTimeout(Config.AlertCooldown, function()
         AlertSend = false

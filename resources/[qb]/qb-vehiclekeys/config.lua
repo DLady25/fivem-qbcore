@@ -20,11 +20,11 @@ Config.LockNPCDrivingCars = true -- Lock state for NPC cars being driven by NPCs
 Config.LockNPCParkedCars = true -- Lock state for NPC parked cars [true = locked, false = unlocked]
 Config.UseKeyfob = false -- you can set this true if you dont need ui
 -- Lockpick Settings
-Config.RemoveLockpickNormal = 0.5 -- Chance to remove lockpick on fail
-Config.RemoveLockpickAdvanced = 0.2 -- Chance to remove advanced lockpick on fail
+Config.RemoveLockpickNormal = 0.1 -- Chance to remove lockpick on fail
+Config.RemoveLockpickAdvanced = 0.1 -- Chance to remove advanced lockpick on fail
 -- Carjack Settings
 Config.CarJackEnable = true -- True allows for the ability to car jack peds.
-Config.CarjackingTime = 7500 -- How long it takes to carjack
+Config.CarjackingTime = 500 -- How long it takes to carjack
 Config.DelayBetweenCarjackings = 10000 -- Time before you can carjack again
 Config.CarjackChance = {
     ['2685387236'] = 0.0, -- melee
@@ -40,10 +40,10 @@ Config.CarjackChance = {
 }
 
 -- Hotwire Settings
-Config.HotwireChance = 0.5 -- Chance for successful hotwire or not
-Config.TimeBetweenHotwires = 5000 -- Time in ms between hotwire attempts
-Config.minHotwireTime = 20000 -- Minimum hotwire time in ms
-Config.maxHotwireTime = 40000 --  Maximum hotwire time in ms
+Config.HotwireChance = 0.8 -- Chance for successful hotwire or not
+Config.TimeBetweenHotwires = 100 -- Time in ms between hotwire attempts
+Config.minHotwireTime = 500 -- Minimum hotwire time in ms
+Config.maxHotwireTime = 800 --  Maximum hotwire time in ms
 
 -- Police Alert Settings
 Config.AlertCooldown = 10000 -- 10 seconds
