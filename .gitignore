@@ -1,15 +1,16 @@
-# txAdmin data & cache
+# FiveM / txAdmin
 txData/
 cache/
 logs/
 crashes/
+.versus/
 
-# configs/segredos locais
+# Configs locais
 server.cfg
 .env
 *.key
 
-# banco/dumps
+# DB
 *.sql
 *.dump
 
