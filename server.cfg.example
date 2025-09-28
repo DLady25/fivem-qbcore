@@ -1,33 +1,32 @@
-# =========================================================
-# Example server.cfg for QBCore
-# =========================================================
+## =========================
+##  QBCore - server.cfg.example
+## =========================
 
-## Licença FiveM (obrigatório)
-sv_licenseKey "PASTE_YOUR_KEY_HERE"
-
-## Nome e descrição do servidor
-sv_hostname "[QBCore] Meu Servidor Exemplo"
-sets sv_projectName "[QBCore Framework] Meu RP"
-sets sv_projectDesc "Servidor Roleplay com base no QBCore"
-sets locale "pt-BR"
-setr qb_locale "pt-br"
-
-## Slots e rede
-sv_maxclients 48
+## --- NETWORK ---
 endpoint_add_tcp "0.0.0.0:30120"
 endpoint_add_udp "0.0.0.0:30120"
+sv_maxclients 48
 sv_enforceGameBuild 3095
-sets tags "qbcore,qb-core,roleplay,br"
+sv_scriptHookAllowed 0
+sv_endpointprivacy true
+set onesync on
+set resources_useSystemChat true
+# sv_master1 ""          # descomente para NÃO publicar na lista pública
 
-## API Steam (opcional, para recursos que usam Steam)
-set steam_webApiKey "PASTE_STEAM_KEY_IF_USED"
+## --- PROJECT INFO ---
+sv_licenseKey "PASTE_YOUR_KEY_HERE"
+sv_hostname "[QBCore] Meu servidor exemplo"
+sets sv_projectName "QBCore Example"
+sets sv_projectDesc "Servidor base QBCore para estudo/desenvolvimento"
+sets locale "pt-BR"
+setr qb_locale "pt-br"
+# load_server_icon myLogo.png  # habilite se o arquivo existir na pasta data
 
-## Conexão com banco de dados (MariaDB/MySQL)
-# ⚠️ Ajuste usuário/senha conforme sua config local.
-# Exemplo: mysql://qbcore:SENHA_FORTE@127.0.0.1/qbcore?charset=utf8mb4
-set mysql_connection_string "mysql://USUARIO:SENHA@127.0.0.1/qbcore?charset=utf8mb4"
+## --- DATABASE ---
+# Ajuste usuário/senha/host no ambiente local
+set mysql_connection_string "mysql://qbcore:CHANGE_ME@127.0.0.1/qbcore?charset=utf8mb4"
 
-## Voz
+## --- VOICE (PMA) ---
 setr voice_useNativeAudio true
 setr voice_useSendingRangeOnly true
 setr voice_defaultCycle "GRAVE"
@@ -35,7 +34,11 @@ setr voice_defaultVolume 0.3
 setr voice_enableRadioAnim 1
 setr voice_syncData 1
 
-## Recursos básicos (não edite sem saber)
+## =========================
+##  RESOURCES (ordem importa)
+## =========================
+
+# FiveM base
 ensure mapmanager
 ensure chat
 ensure spawnmanager
@@ -44,8 +47,12 @@ ensure basic-gamemode
 ensure hardcap
 ensure baseevents
 
-## Framework QBCore + dependências
-ensure oxmysql
+# Standalone / dependências
+ensure oxmysql              # precisa vir ANTES do qb-core
+ensure pma-voice
+ensure [standalone]
+
+# QBCore
 ensure qb-core
 ensure qb-smallresources
 ensure qb-weathersync
@@ -54,11 +61,23 @@ ensure qb-spawn
 ensure qb-apartments
 ensure qb-loading
 ensure [qb]
-ensure [standalone]
+
+# Mapas padrão (opcional)
 ensure [voice]
 ensure [defaultmaps]
 
-## Permissões
+## =========================
+##  PERMISSIONS (exemplos)
+## =========================
 add_ace group.admin command allow
-# Exemplo: dar admin pro seu license ID
-# add_principal identifier.license:SEU_LICENSE_ID group.admin
+add_ace resource.qb-core command allow
+
+# Ex.: liberar admin pelo license/discord (troque pelos seus)
+# add_principal identifier.license:PASTE_LICENSE_HERE group.admin
+# add_principal identifier.discord:PASTE_DISCORD_ID group.admin
+
+# Grupos QBCore
+add_ace qbcore.god command allow
+add_principal qbcore.god group.admin
+add_principal qbcore.god qbcore.admin
+add_principal qbcore.admin qbcore.mod
