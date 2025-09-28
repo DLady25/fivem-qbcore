@@ -18,6 +18,94 @@ if not Config then
     }
 end
 
+
+local RELATION_POLICE = AddRelationshipGroup('NPC_POLICE')
+local RELATION_PLAYER = GetHashKey('PLAYER')
+
+SetRelationshipBetweenGroups(0, RELATION_POLICE, RELATION_PLAYER)
+SetRelationshipBetweenGroups(0, RELATION_PLAYER, RELATION_POLICE)
+
+local WantedState = {
+    active = false,
+    level = 0
+}
+
+CreateThread(function()
+    Wait(500)
+    local pid = PlayerId()
+    SetPoliceIgnorePlayer(pid, true)
+    SetDispatchCopsForPlayer(pid, false)
+end)
+
+local function ActivateNativeWanted(level)
+    local pid = PlayerId()
+    local wl = math.min(math.max(level or 1, 1), 5)
+    SetDispatchCopsForPlayer(pid, false)
+    SetPoliceIgnorePlayer(pid, false)
+    SetMaxWantedLevel(5)
+    SetPlayerWantedLevel(pid, wl, false)
+    SetPlayerWantedLevelNow(pid, true)
+    SetWantedLevelMultiplier(math.max(wl / 5.0, 0.2))
+    SetRelationshipBetweenGroups(5, RELATION_POLICE, RELATION_PLAYER)
+    SetRelationshipBetweenGroups(5, RELATION_PLAYER, RELATION_POLICE)
+    WantedState.active = true
+    WantedState.level = wl
+    if Config.Debug then
+        print(('^3[npc-police]^0 ActivateNativeWanted level=%d'):format(wl))
+    end
+end
+
+local function UpdateNativeWanted(level)
+    local wl = math.min(math.max(level or 1, 1), 5)
+    if not WantedState.active then
+        ActivateNativeWanted(wl)
+        return
+    end
+    local pid = PlayerId()
+    SetPlayerWantedLevel(pid, wl, false)
+    SetPlayerWantedLevelNow(pid, true)
+    SetWantedLevelMultiplier(math.max(wl / 5.0, 0.2))
+    WantedState.level = wl
+    if Config.Debug then
+        print(('^3[npc-police]^0 UpdateNativeWanted level=%d'):format(wl))
+    end
+end
+
+local function ClearNativeWanted()
+    if not WantedState.active then return end
+    local pid = PlayerId()
+    SetPlayerWantedLevel(pid, 0, false)
+    SetPlayerWantedLevelNow(pid, false)
+    SetWantedLevelMultiplier(0.0)
+    SetPoliceIgnorePlayer(pid, true)
+    SetRelationshipBetweenGroups(0, RELATION_POLICE, RELATION_PLAYER)
+    SetRelationshipBetweenGroups(0, RELATION_PLAYER, RELATION_POLICE)
+
+    for _, u in ipairs(Pool.foot) do
+        if DoesEntityExist(u.ped) then
+            ClearPedTasks(u.ped)
+            TaskWanderInArea(u.ped, u.home.x, u.home.y, u.home.z, Config.PoliceAmbient.footWanderRadius, 5.0, 5.0)
+            u.state = 'patrol'
+        end
+    end
+    for _, u in ipairs(Pool.cars) do
+        if DoesEntityExist(u.driver) and DoesEntityExist(u.veh) then
+            ClearPedTasks(u.driver)
+            TaskVehicleDriveWander(u.driver, u.veh, Config.PoliceAmbient.vehicleCruiseSpeed, 786603)
+            if u.pass and DoesEntityExist(u.pass) then
+                ClearPedTasks(u.pass)
+            end
+            u.state = 'patrol'
+        end
+    end
+
+    WantedState.active = false
+    WantedState.level = 0
+    if Config.Debug then
+        print('^3[npc-police]^0 ClearNativeWanted')
+    end
+end
+
 local function DBG(msg)
     if Config.Debug then
         print(("^3[npc-police]^0 %s"):format(msg))
@@ -87,13 +175,20 @@ local function SpawnFootCop()
     local ped = CreatePed(6, mdl, pos.x, pos.y, pos.z, math.random(0,360), true, true)
     if not DoesEntityExist(ped) then DBG("SpawnFootCop: ped não criado"); return end
 
-    SetPedRelationshipGroupHash(ped, GetHashKey("COP"))
+    SetPedRelationshipGroupHash(ped, RELATION_POLICE)
+    SetPedAsCop(ped, true)
+    GiveWeaponToPed(ped, `WEAPON_COMBATPISTOL`, 160, false, true)
+    SetCurrentPedWeapon(ped, `WEAPON_COMBATPISTOL`, true)
     SetPedArmour(ped, 50)
     SetEntityHealth(ped, 200)
+    SetPedAccuracy(ped, 45)
     SetPedSeeingRange(ped, 60.0)
     SetPedHearingRange(ped, 60.0)
     SetPedCombatAttributes(ped, 46, true)      -- use cover
     SetPedCombatRange(ped, 2)                  -- médio
+
+    SetPedKeepTask(ped, true)
+    SetPedDropsWeaponsWhenDead(ped, false)
 
     TaskWanderInArea(ped, pos.x, pos.y, pos.z, Config.PoliceAmbient.footWanderRadius, 5.0, 5.0)
     table.insert(Pool.foot, { ped = ped, state = 'patrol', home = pos, removed = false })
@@ -130,8 +225,21 @@ local function SpawnPatrolCar()
         return
     end
 
-    SetPedRelationshipGroupHash(driver, GetHashKey("COP"))
-    SetPedRelationshipGroupHash(pass,   GetHashKey("COP"))
+    SetPedRelationshipGroupHash(driver, RELATION_POLICE)
+    SetPedAsCop(driver, true)
+    GiveWeaponToPed(driver, `WEAPON_COMBATPISTOL`, 120, false, true)
+    SetCurrentPedWeapon(driver, `WEAPON_COMBATPISTOL`, true)
+    SetPedAccuracy(driver, 45)
+    SetPedKeepTask(driver, true)
+    SetPedDropsWeaponsWhenDead(driver, false)
+
+    SetPedRelationshipGroupHash(pass, RELATION_POLICE)
+    SetPedAsCop(pass, true)
+    GiveWeaponToPed(pass, `WEAPON_COMBATPISTOL`, 120, false, true)
+    SetCurrentPedWeapon(pass, `WEAPON_COMBATPISTOL`, true)
+    SetPedAccuracy(pass, 45)
+    SetPedKeepTask(pass, true)
+    SetPedDropsWeaponsWhenDead(pass, false)
 
     TaskVehicleDriveWander(driver, veh, Config.PoliceAmbient.vehicleCruiseSpeed, 786603)
     table.insert(Pool.cars, { veh = veh, driver = driver, pass = pass, state = 'patrol', home = pos, removed = false })
@@ -145,7 +253,7 @@ CreateThread(function()
             if #Pool.foot < Config.PoliceAmbient.maxFoot then SpawnFootCop() end
         end
         if #Pool.cars < Config.PoliceAmbient.maxVehicle then SpawnPatrolCar() end
-        Wait(2000)
+        Wait(Config.PoliceAmbient.throttling and 5000 or 2000)
     end
 end)
 
@@ -171,8 +279,34 @@ end)
 -- ===== RESPOSTA À OCORRÊNCIA =====
 local function DriveVehicleTo(u, dest)
     if not (DoesEntityExist(u.driver) and DoesEntityExist(u.veh)) then return end
-    TaskVehicleDriveToCoord(u.driver, u.veh, dest.x, dest.y, dest.z,
+
+    local standOff = (Config.Response and Config.Response.vehicleStandOff) or 0.0
+    local target = dest
+    if standOff > 0.0 then
+        local vehCoords = GetEntityCoords(u.veh)
+        local dx = dest.x - vehCoords.x
+        local dy = dest.y - vehCoords.y
+        local dist = math.sqrt(dx * dx + dy * dy)
+        if dist > standOff then
+            local scale = (dist - standOff) / dist
+            target = vector3(vehCoords.x + dx * scale, vehCoords.y + dy * scale, dest.z)
+        end
+    end
+
+    TaskVehicleDriveToCoord(u.driver, u.veh, target.x, target.y, target.z,
         Config.PoliceAmbient.vehicleCruiseSpeed, 0, GetEntityModel(u.veh), 786603, 5.0, true)
+end
+
+local function StartVehicleChase(u, targetPed)
+    if not (DoesEntityExist(u.driver) and DoesEntityExist(u.veh)) then return end
+    TaskVehicleChase(u.driver, targetPed)
+    SetDriveTaskDrivingStyle(u.driver, 786603)
+    SetDriveTaskCruiseSpeed(u.driver, Config.PoliceAmbient.vehicleCruiseSpeed)
+    SetPedKeepTask(u.driver, true)
+    if u.pass and DoesEntityExist(u.pass) then
+        TaskCombatPed(u.pass, targetPed, 0, 16)
+        SetPedKeepTask(u.pass, true)
+    end
 end
 
 local function UnitsRespond(level)
@@ -181,14 +315,20 @@ local function UnitsRespond(level)
     Pool.incident = { target = player, level = level, startedAt = GetGameTimer() }
     DBG(("UnitsRespond: level=%d"):format(level))
 
+
+    UpdateNativeWanted(level)
+
+    local respondMax = Config.Response.maxRespondDistance or Config.Response.loseDistance or 400.0
+
     -- 1) Unidades EXISTENTES e PRÓXIMAS respondem
     for _, u in ipairs(Pool.foot) do
         if DoesEntityExist(u.ped) then
             local d = VecDist(GetEntityCoords(u.ped), ppos)
-            if d <= Config.Response.maxRespondDistance then
+            if d <= respondMax then
                 ClearPedTasks(u.ped)
                 TaskGoToEntity(u.ped, player, -1, 15.0, 4.0, 0, 0)
                 TaskCombatPed(u.ped, player, 0, 16)
+                SetPedKeepTask(u.ped, true)
                 u.state = 'respond'
             end
         end
@@ -196,9 +336,9 @@ local function UnitsRespond(level)
     for _, u in ipairs(Pool.cars) do
         if DoesEntityExist(u.driver) and DoesEntityExist(u.veh) then
             local d = VecDist(GetEntityCoords(u.veh), ppos)
-            if d <= Config.Response.maxRespondDistance then
+            if d <= respondMax then
                 ClearPedTasks(u.driver)
-                DriveVehicleTo(u, ppos)
+                StartVehicleChase(u, player)
                 u.state = 'respond'
             end
         end
@@ -214,7 +354,7 @@ local function UnitsRespond(level)
             SpawnPatrolCar()
             local u = Pool.cars[#Pool.cars]
             if u and u.state == 'patrol' then
-                DriveVehicleTo(u, ppos)
+                StartVehicleChase(u, player)
                 u.state = 'respond'
             end
         end
@@ -242,10 +382,13 @@ local function ReturnOrDespawnUnit(u)
     if (u.ped and DoesEntityExist(u.ped) and visible(u.ped))
     or (u.veh and DoesEntityExist(u.veh) and visible(u.veh)) then
         if u.ped and DoesEntityExist(u.ped) then
+            ClearPedTasks(u.ped)
             TaskWanderInArea(u.ped, u.home.x, u.home.y, u.home.z, Config.PoliceAmbient.footWanderRadius, 5.0, 5.0)
             u.state = 'patrol'
         elseif u.driver and DoesEntityExist(u.driver) and DoesEntityExist(u.veh) then
+            ClearPedTasks(u.driver)
             TaskVehicleDriveWander(u.driver, u.veh, Config.PoliceAmbient.vehicleCruiseSpeed, 786603)
+            if u.pass and DoesEntityExist(u.pass) then ClearPedTasks(u.pass) end
             u.state = 'patrol'
         end
         return
@@ -261,11 +404,14 @@ local function ReturnOrDespawnUnit(u)
     else
         -- muito perto: mandar “voltar pra base”
         if u.ped and DoesEntityExist(u.ped) then
+            ClearPedTasks(u.ped)
             TaskWanderInArea(u.ped, u.home.x, u.home.y, u.home.z, Config.PoliceAmbient.footWanderRadius, 5.0, 5.0)
             u.state = 'patrol'
         elseif u.driver and DoesEntityExist(u.driver) and DoesEntityExist(u.veh) then
+            ClearPedTasks(u.driver)
             TaskVehicleDriveToCoord(u.driver, u.veh, u.home.x, u.home.y, u.home.z,
                 Config.PoliceAmbient.vehicleCruiseSpeed, 0, GetEntityModel(u.veh), 786603, 5.0, true)
+            if u.pass and DoesEntityExist(u.pass) then ClearPedTasks(u.pass) end
             u.state = 'return'
         end
     end
@@ -278,17 +424,35 @@ CreateThread(function()
             local ppos = GetEntityCoords(player)
 
             local active = 0
+            local engage = Config.Response.engageDistance or Config.Response.maxRespondDistance or Config.Response.loseDistance
+            local lose = Config.Response.loseDistance or engage
+            if engage > lose then engage = lose end
+
             for _, u in ipairs(Pool.foot) do
                 if u.state == 'respond' and DoesEntityExist(u.ped) then
-                    if VecDist(GetEntityCoords(u.ped), ppos) <= Config.Response.loseDistance then
+                    local dist = VecDist(GetEntityCoords(u.ped), ppos)
+                    if dist <= lose then
                         active = active + 1
+                        if dist > engage then
+                            TaskGoToEntity(u.ped, player, -1, 15.0, 4.0, 0, 0)
+                            TaskCombatPed(u.ped, player, 0, 16)
+                            SetPedKeepTask(u.ped, true)
+                        end
+                    else
+                        ReturnOrDespawnUnit(u)
                     end
                 end
             end
             for _, u in ipairs(Pool.cars) do
                 if u.state == 'respond' and DoesEntityExist(u.veh) then
-                    if VecDist(GetEntityCoords(u.veh), ppos) <= Config.Response.loseDistance then
+                    local dist = VecDist(GetEntityCoords(u.veh), ppos)
+                    if dist <= lose then
                         active = active + 1
+                        if dist > engage then
+                            StartVehicleChase(u, player)
+                        end
+                    else
+                        ReturnOrDespawnUnit(u)
                     end
                 end
             end
@@ -301,6 +465,7 @@ CreateThread(function()
                     if u.state ~= 'patrol' then ReturnOrDespawnUnit(u) end
                 end
                 Pool.incident = nil
+                ClearNativeWanted()
                 QBCore.Functions.Notify("As viaturas encerraram a ocorrência.", "primary", 2500)
             end
         end

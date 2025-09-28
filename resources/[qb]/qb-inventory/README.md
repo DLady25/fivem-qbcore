@@ -1,55 +1,76 @@
-# qb-inventory
+# Pappu-inventorynp
+Inventory Feature for QBCore Inventorynp And inspired by NoPixel 4.0.
 
-## Dependencies
-- [qb-core](https://github.com/qbcore-framework/qb-core)
-- [qb-smallresources](https://github.com/qbcore-framework/qb-smallresources) - For logging transfer and other history
+# Features
 
-## Features
-- Stashes (Personal and/or Shared)
-- Vehicle Trunk & Glovebox
-- Weapon Attachments
-- Shops
-- Item Drops
+* All Images Follow The Same Dimensions
+* Custom brand logo above option buttons
+* Options menu
+* Help box 
+* Custom inventory images (more always being added in each new update)
+* Default weight icon easily changeable with Font Awesome icons
+* Hotkey numbers visible in inventory and hotbar slots
+* Weight progress bar
+* Tooltip has a determined height (so it won't ever go higher than visible or cut off)
+* Text overflow ellipsis used (so your product titles with never overlap the containers and instead do "...")
 
-## Documentation
-https://docs.qbcore.org/qbcore-documentation/qbcore-resources/qb-inventory
 
-## Installation
-### Manual
-- Download the script and put it in the `[qb]` directory.
-- Import `qb-inventory.sql` in your database
-- Add the following code to your server.cfg/resouces.cfg
+## Screenshots
+![Group 5763](https://github.com/P4ScriptsFivem/pappu-inventorynp/assets/120780563/b6316433-209f-413d-882e-91eee080f6fa)
 
-# Migrating from old qb-inventory
+# Installation (Latest QBCore Update)
+Manual
+* Download `pappu-inventorynp` from our GitHub
+* Make sure you have the latest update of [qb-core](https://github.com/qbcore-framework/qb-core)
+* Make sure you have the latest update of [qb-smallresources](https://github.com/qbcore-framework/qb-smallresources)
+* Make sure you have the latest update of [qb-weapons](https://github.com/qbcore-framework/qb-weapons)
+* Drag `pappu-inventorynp` into your resources folder or any subfolder
+* Make sure that the folder is named `pappu-inventorynp` and **not** `pappu-inventorynp-main`
+* Replace all occurrences of `pappu-inventorynp` with `pappu-inventorynp`.<br>The example below uses Visual Studio Code to replace all instances.
 
-## Database
-### Upload the new `inventory.sql` file to create the new `inventories` table
-### Use the provided `migrate.sql` file to migrate all of your saved inventory data from stashes, trunks, etc
-### Once complete, you can delete `gloveboxitems` `stashitems` and `trunkitems` tables from your database
-```sql
-CREATE TABLE IF NOT EXISTS `inventories` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `identifier` VARCHAR(50) NOT NULL,
-  `items` LONGTEXT DEFAULT ('[]'),
-  PRIMARY KEY (`identifier`),
-  KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
+
+## Set up the decay system
+
+If you want the decay system to work, then please read the information below, otherwise it won't work.
+
+You need to add a decay value for all items in your `qb-core/shared/items.lua` file, the variable stands for the number of days it takes to decay.
+
+### Examples:
+
+#### Example of what you have to add
+
+```lua
+-- decay = The number of days it takes for an item to decay
+-- delete = If set to true, the item will be removed once it decays
+["decay"] = 28.0, ["delete"] = true
 ```
 
-# License
+#### Example with the full item in QB-Core's shared file
 
-    QBCore Framework
-    Copyright (C) 2021 Joshua Eger
+```lua
+['sandwich'] = {['name'] = 'sandwich', ['label'] = 'Sandwich', ['weight'] = 200, ['type'] = 'item', ['image'] = 'sandwich.png', ['unique'] = false, ['useable'] = true, ['shouldClose'] = true,	['combinable'] = nil, ['description'] = 'Nice bread for your stomach', ["decay"] = 3.0, ["delete"] = true},
+```
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+In this example, the sandwich item would take 3 days to decay and once it does, it would be removed.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+# Dependencies
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>
+* [qbcore framework](https://github.com/qbcore-framework)
+* [qb-target](https://github.com/BerkieBb/qb-target)
+* [qb-core](https://github.com/qbcore-framework/qb-core)
+* [qb-logs](https://github.com/qbcore-framework/qb-logs)
+* [qb-traphouse](https://github.com/qbcore-framework/qb-traphouse)
+* [qb-radio](https://github.com/qbcore-framework/qb-radio)
+* [qb-drugs](https://github.com/qbcore-framework/qb-drugs)
+* [qb-shops](https://github.com/qbcore-framework/qb-shops)
+
+## Performance
+
+Runs at ~ 0.00 to 0.01 ms if you have more optimization suggestions feel free to reach out
+
+## Credits & Original Repository
+- [ps-inventory](https://github.com/Project-Sloth/ps-inventory)
+
+## License
+[GPL-3.0 license](LICENSE)

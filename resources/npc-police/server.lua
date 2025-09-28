@@ -16,7 +16,7 @@ local function clamp(x, a, b) if x < a then return a end if x > b then return b 
 local function clearTimer(ident)
     local entry = Wanted[ident]
     if entry and entry.timer then
-        StopResourceTimer(entry.timer) -- no-op, just in case (we'll use SetTimeout below)
+        ClearTimeout(entry.timer) -- no-op, just in case (we'll use SetTimeout below)
         entry.timer = nil
     end
 end
@@ -24,12 +24,15 @@ end
 local function setDecay(ident, seconds)
     clearTimer(ident)
     if not seconds or seconds <= 0 then return end
+    if not Wanted[ident] then return end
+
     Wanted[ident].timer = SetTimeout(seconds * 1000, function()
+        if not Wanted[ident] then return end
         Wanted[ident].level = 0
         Wanted[ident].timer = nil
         local src = Wanted[ident].src
         if src and GetPlayerPed(src) ~= 0 then
-            TriggerClientEvent('QBCore:Notify', src, 'Você perdeu o nível de procurado.', 'primary')
+            TriggerClientEvent('QBCore:Notify', src, 'Voce perdeu o nivel de procurado.', 'primary')
         end
     end)
 end
@@ -45,8 +48,22 @@ local CrimeScale = {
 -- ==== EVENTOS ====
 
 -- Controle fino: addWanted(amount[, crime][, decaySeconds])
-RegisterNetEvent('police:server:addWanted', function(amount, crime, decaySeconds)
-    local src = source
+RegisterNetEvent('police:server:addWanted', function(amount, crime, decaySeconds, targetSrc)
+    local caller = source
+    local src = caller
+    local override = targetSrc and tonumber(targetSrc) or nil
+
+    if caller == 0 and override then
+        src = override
+    elseif caller ~= 0 and override and override ~= caller then
+        print(('[npc-police] blocked addWanted from %s to target %s'):format(tostring(caller), tostring(targetSrc)))
+        return
+    end
+
+    if not src or src <= 0 or GetPlayerPed(src) == 0 then
+        return
+    end
+
     local ident = getIdentifier(src)
     Wanted[ident] = Wanted[ident] or { level = 0, src = src }
 
@@ -61,14 +78,19 @@ RegisterNetEvent('police:server:addWanted', function(amount, crime, decaySeconds
     local level = Wanted[ident].level
     print(('[npc-police] +wanted -> %s level=%d crime=%s'):format(ident, level, tostring(crime or 'na')))
 
-    -- dispara resposta no client desse player
     TriggerClientEvent('police:client:spawnResponse', src, level)
 end)
 
--- API simples: reportCrime(crimeId[, decaySeconds])
-RegisterNetEvent('police:server:reportCrime', function(crimeId, decaySeconds)
+RegisterNetEvent('police:server:reportCrime', function(crimeId, decaySeconds, targetSrc)
+    local caller = source
+    local target = caller
+
+    if caller == 0 and targetSrc then
+        target = tonumber(targetSrc)
+    end
+
     local amount = CrimeScale[crimeId] or 1
-    TriggerEvent('police:server:addWanted', amount, crimeId, decaySeconds or 180)
+    TriggerEvent('police:server:addWanted', amount, crimeId, decaySeconds or 180, target)
 end)
 
 -- ==== CALLBACKS / COMANDOS ADMIN ====
@@ -84,12 +106,21 @@ QBCore.Commands.Add('addwanted', 'Adicionar procurado a um player', {
     {name='crime', help='(opcional)'}
 }, true, function(src, args)
     local tgt = tonumber(args[1]); if not tgt then return end
+    if GetPlayerPed(tgt) == 0 then
+        TriggerClientEvent('QBCore:Notify', src, 'Player nao encontrado.', 'error')
+        return
+    end
+
     local amt = tonumber(args[2]) or 1
     local crime = args[3] or 'admin'
-    TriggerClientEvent('QBCore:Notify', src, ('Aplicando wanted +%d ao ID %d'):format(amt, tgt), 'primary')
-    TriggerClientEvent('QBCore:Notify', tgt, ('Seu nível de procurado aumentou (+%d)'):format(amt), 'error')
-    TriggerClientEvent('police:client:spawnResponse', tgt, clamp(amt,1,5))
-    TriggerEvent('police:server:addWanted', amt, crime, 180)
+
+    TriggerEvent('police:server:addWanted', amt, crime, 180, tgt)
+
+    local ident = getIdentifier(tgt)
+    local level = Wanted[ident] and Wanted[ident].level or clamp(amt, 0, 5)
+
+    TriggerClientEvent('QBCore:Notify', src, ('Wanted do ID %d: %d'):format(tgt, level), 'primary')
+    TriggerClientEvent('QBCore:Notify', tgt, ('Seu nivel de procurado agora e %d'):format(level), 'error')
 end, 'admin')
 
 QBCore.Commands.Add('getwanted', 'Ver seu nível de procurado (ou de outro player)', {

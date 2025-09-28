@@ -28,7 +28,7 @@ Config.Binoculars = {
 }
 
 Config.AIResponse = {
-    wantedLevels = false, -- if true, you will recieve wanted levels
+    wantedLevels = true, -- if true, you will recieve wanted levels
     dispatchServices = {  -- AI dispatch services
         [1] = false,      -- Police Vehicles
         [2] = false,      -- Police Helicopters
@@ -163,14 +163,14 @@ Config.BlacklistedScenarios = {
 }
 
 Config.BlacklistedVehs = {
-    [`shamal`] = true,
-    [`luxor`] = true,
-    [`luxor2`] = true,
-    [`jet`] = true,
-    [`lazer`] = true,
-    [`buzzard`] = true,
-    [`buzzard2`] = true,
-    [`annihilator`] = true,
+    [`shamal`] = false,
+    [`luxor`] = false,
+    [`luxor2`] = false,
+    [`jet`] = false,
+    [`lazer`] = false,
+    [`buzzard`] = false,
+    [`buzzard2`] = false,
+    [`annihilator`] = false,
     [`savage`] = true,
     [`titan`] = true,
     [`rhino`] = true,

@@ -752,7 +752,8 @@ const playerHud = {
             show: false,
             talking: false,
             showVoice: true,
-            showHealth: false,
+            showRadio: true,
+            showHealth: true,
             showArmor: true,
             showHunger: true,
             showThirst: true,
@@ -766,7 +767,8 @@ const playerHud = {
             showParachute: false,
             showDev: false,
             voiceIcon: "fas fa-microphone",
-            talkingColor: "#FFFFFF",
+            talkingColor: "#84898f",
+            radioColor: "#84898f",
             nosColor: "",
             engineColor: "",
             armorColor: "",
@@ -794,25 +796,37 @@ const playerHud = {
     methods: {
         hudTick(data) {
             this.show = data.show;
-            this.health = data.health;
-            this.armor = data.armor;
-            this.hunger = data.hunger;
-            this.thirst = data.thirst;
-            this.stress = data.stress;
-            this.voice = data.voice;
-            this.talking = data.talking;
-            this.radio = data.radio;
+            //this.health = data.health;
+            healthBar.set(data.health);
+            //this.armor = data.armor;
+            armorBar.set(data.armor);
+            //this.hunger = data.hunger;
+            hungerBar.set(data.hunger)
+            //this.thirst = data.thirst;
+            thirstBar.set(data.thirst);
+            //this.stress = data.stress;
+            stressBar.set(data.stress);
+            //this.voice = data.voiceBar;
+            voicesBar.set(data.voice * 20);
+            //this.talking = data.talking;
+            //talkingBar.set(data.talking);
+            this.radioBar = data.radioBar;
+            radioBar.set(100);
             this.radioActive = data.radioActive;
             this.nos = data.nos;
+            nosBar.set(data.nos);
             this.oxygen = data.oxygen;
+            oxygenBar.set(data.oxygen);
             this.cruise = data.cruise;
             this.nitroActive = data.nitroActive;
             this.harness = data.harness;
             this.speed = data.speed;
             this.armed = data.armed;
             this.parachute = data.parachute;
-            this.hp = data.hp * 5;
-            this.engine = data.engine;
+            //this.hp = data.hp * 5;
+            harnessBar.set(data.hp * 5);
+            //this.engine = data.engine;
+            engineBar.set(data.engine);
             this.cinematic = data.cinematic;
             this.dev = data.dev;
             this.playerDead = data.playerDead;
@@ -825,31 +839,31 @@ const playerHud = {
             this.dynamicEngine = data.dynamicEngine;
             this.dynamicNitro = data.dynamicNitro;
 
-            if (data.dynamicHealth == true) {
-                if (data.health >= 100) {
-                    this.showHealth = false;
-                } else {
-                    this.showHealth = true;
-                }
-            } else if (data.dynamicHealth == false) {
-                this.showHealth = true;
-            }
-            if (data.playerDead === false) {
-                this.healthColor = "#3FA554";
-            } else {
-                this.healthColor = "#ff0000";
-                this.health = 100;
-            }
+            //if (data.dynamicHealth == true) {
+                //if (data.health >= 100) {
+                    //this.showHealth = false;
+                //} else {
+                    //this.showHealth = true;
+                //}
+            //} else if (data.dynamicHealth == false) {
+                //this.showHealth = true;
+            //}
+            //if (data.playerDead === false) {
+                //this.healthColor = "#3FA554";
+            //} else {
+                //this.healthColor = "#ff0000";
+                //this.health = 100;
+            //}
 
-            if (data.dynamicArmor == true) {
-                if (data.armor == 0) {
-                    this.showArmor = false;
-                } else {
-                    this.showArmor = true;
-                }
-            } else if (data.dynamicArmor == false) {
-                this.showArmor = true;
-            }
+            //if (data.dynamicArmor == true) {
+                //if (data.armor == 0) {
+                    //this.showArmor = false;
+                //} else {
+                    //this.showArmor = true;
+                //}
+            //} else if (data.dynamicArmor == false) {
+                //this.showArmor = true;
+            //}
 
             if (data.armor <= 0) {
                 this.armorColor = "#FF0000";
@@ -941,7 +955,7 @@ const playerHud = {
                     this.showNos = false;
                 } else {
                     this.showNos = true;
-                }
+                }   
             } else if (data.dynamicNitro == false) {
                 if (data.nos < 0) {
                     this.showNos = false;
@@ -956,17 +970,36 @@ const playerHud = {
             }
 
             if (data.radioActive) {
-                this.talkingColor = "#D64763";
-            } else if (data.talking) {
-                this.talkingColor = "#FFFF3E";
+                //this.talkingColor = "#D64763"; 
+                document.documentElement.style.setProperty('--radio-bar-color', '#e0467989');
+                document.documentElement.style.setProperty('--b-radio-bar-color', '#e0467989');
             } else {
-                this.talkingColor = "#FFFFFF";
+                //this.talkingColor = "#a5a8aa";
+                document.documentElement.style.setProperty('--radio-bar-color', '#d5d5d5');
+                document.documentElement.style.setProperty('--b-radio-bar-color', '#ecececd7');
             }
+            
             if (data.radio != 0 && data.radio != undefined) {
-                this.voiceIcon = "fas fa-headset";
+                this.showRadio = true;
             } else if (data.radio == 0 || data.radio == undefined) {
-                this.voiceIcon = "fas fa-microphone";
+                this.showRadio = false;
             }
+
+            if (data.talking) {
+                //this.talkingColor = "#FFFF3E";
+                document.documentElement.style.setProperty('--talk-bar-color', '#eaea57b7');
+                document.documentElement.style.setProperty('--b-talk-bar-color', '#eaea57b7');
+            } else {
+                //this.talkingColor = "#FFFFFF";
+                document.documentElement.style.setProperty('--talk-bar-color', '#d5d5d5');
+                document.documentElement.style.setProperty('--b-talk-bar-color', '#ecececd7');
+            }
+
+            //if (data.radio != 0 && data.radio != undefined) {
+                //this.voiceIcon = "fas fa-headset";
+            //} else if (data.radio == 0 || data.radio == undefined) {
+                //this.voiceIcon = "fas fa-microphone";
+            //}
             if (data.cruise === true) {
                 this.cruise = 1;
                 this.showCruise = true;
@@ -1042,36 +1075,60 @@ const vehHud = {
     methods: {
         vehicleHud(data) {
             this.show = data.show;
-            this.speed = data.speed;
+            this.speed = data.speed;    
+
             this.altitude = data.altitude;
-            this.fuel = data.fuel * 0.71;
+            const progressBar = document.querySelector('#progressBar .progress');
+            // Check if progressBar exists before trying to update its style
+            if (progressBar) {
+                // Update the height of the fuel progress bar
+                progressBar.style.height = data.fuel + '%';
+            
+                // Change color to orange if under 30%
+                if (data.fuel < 30) {
+                    progressBar.style.backgroundColor = 'orange';
+                } 
+                // Change color to red if under 20%
+                if (data.fuel < 20) {
+                    progressBar.style.backgroundColor = 'red';
+                } 
+                // Default color (if above 30%)
+                if (data.fuel >= 30) {
+                    progressBar.style.backgroundColor = '#ffffff';
+                }
+            } else {
+                //console.log("oh you're in a car?");
+            }    
+                         
             this.showSeatbelt = data.showSeatbelt;
             this.showAltitude = data.showAltitude;
-            this.showSquareB = data.showSquareB;
-            this.showCircleB = data.showCircleB;
+
+
+            // later when you want to fade in
+            
             if (data.seatbelt === true) {
                 this.seatbelt = 1;
-                this.seatbeltColor = "transparent";
+                let seatbeltIcon = document.getElementById('SeatbeltIcon');
+                if(seatbeltIcon) {
+                    seatbeltIcon.style.opacity = 0;
+                }
             } else {
                 this.seatbelt = 0;
-                this.seatbeltColor = "#FF5100";
+                let seatbeltIcon = document.getElementById('SeatbeltIcon');
+                if(seatbeltIcon) {
+                    seatbeltIcon.style.opacity = 1;
+                }
             }
+            
             if (data.showSeatbelt === true) {
                 this.showSeatbelt = true;
             } else {
                 this.showSeatbelt = false;
-            }
+            }            
             if (data.showAltitude === true) {
                 this.showAltitude = true;
             } else {
                 this.showAltitude = false;
-            }
-            if (data.fuel <= 20) {
-                this.fuelColor = "#ff0000";
-            } else if (data.fuel <= 30) {
-                this.fuelColor = "#dd6e14";
-            } else {
-                this.fuelColor = "#FFFFFF";
             }
             if (data.showSquareB === true) {
                 this.showSquare = true;
@@ -1088,6 +1145,27 @@ const vehHud = {
             }
         },
     },
+    computed: {
+        speedDisplay() {
+            if (!this.show) {
+                return '';
+            }
+            var speedStr = this.speed.toString().padStart(3, '0');
+            var html = '';
+            var nonZeroEncountered = false;
+            for (var i = 0; i < speedStr.length; i++) {
+                if (speedStr[i] !== '0') {
+                    nonZeroEncountered = true;
+                }
+                if (nonZeroEncountered) {
+                    html += '<span style="color: white;">' + speedStr[i] + '</span>';
+                } else {
+                    html += '<span style="color: #8f8f8f;">' + speedStr[i] + '</span>';
+                }
+            }
+            return html;
+        }
+    }    
 };
 const app3 = Vue.createApp(vehHud);
 app3.use(Quasar);
@@ -1114,7 +1192,7 @@ const baseplateHud = {
         this.listener = window.addEventListener("message", (event) => {
             if (event.data.action == "update") {
                 type = event.data.type;
-                value = event.data.value;
+                value = event.data.value / 2;
                 if (value !== undefined) {
                     $(".degrees").html(value);
                     bar = document.getElementsByTagName("svg")[0];
@@ -1163,3 +1241,66 @@ const baseplateHud = {
 const app4 = Vue.createApp(baseplateHud);
 app4.use(Quasar);
 app4.mount("#baseplate-container");
+
+
+
+// Construct an ldBar object
+var radioBar = new ldBar("#Radio");
+var voicesBar = new ldBar("#Voices");
+var healthBar = new ldBar("#Health");
+var armorBar = new ldBar("#Armor");
+var hungerBar = new ldBar("#Hunger");
+var thirstBar = new ldBar("#Thirst");
+var stressBar = new ldBar("#Stress");
+var oxygenBar = new ldBar("#Oxygen");
+var engineBar = new ldBar("#Engine");
+var nosBar = new ldBar("#Nos");
+var harnessBar = new ldBar("#Harness");
+  
+
+
+
+
+function updateRPM(rpm) {
+    var rpmBar = document.getElementById('rpmBar');
+    if (rpmBar) {
+        rpmBar.innerHTML = '';
+        for (var i = 0; i < 18; i++) {
+            var item = document.createElement('div');
+            item.className = 'item';
+            if (i < rpm) {
+                if (i >= 16) {
+                    item.classList.add('critical');
+                } else {
+                    item.classList.add('filled');
+                }
+            }
+            rpmBar.appendChild(item);
+        }
+    } else {
+        //console.log("Element with ID 'rpmBar' not found");
+    }
+}
+
+
+// RPM Counter Updater //
+window.addEventListener('message', function(event) {
+    var rpm = event.data.rpm;
+    if (rpm !== undefined) {
+        //console.log("Received RPM: " + rpm);
+        updateRPM((rpm / 1) * 18);
+    } else {
+        //console.log("RPM data not received");
+    }
+});
+
+// Gear Counter Updater //
+document.addEventListener("DOMContentLoaded", function() {
+    window.addEventListener("message", function(event) {
+        var gearElement = document.getElementById("gear");
+        if (gearElement && event.data.gear) {
+            // Update the gear display with the data from Lua
+            gearElement.innerHTML = event.data.gear;
+        }
+    });
+});

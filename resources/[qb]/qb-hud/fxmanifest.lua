@@ -1,8 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
-author 'Kakarot'
-description 'Heads-up display letting players track their hunger, thirst, stress, and more'
+description 'qb-hud'
 version '2.2.0'
 
 shared_scripts {
@@ -12,7 +11,11 @@ shared_scripts {
     'config.lua'
 }
 
-client_script 'client.lua'
+client_scripts {  
+    'client.lua',
+    'HRSGears.lua' 
+}
+
 server_script 'server.lua'
 
 ui_page 'html/index.html'

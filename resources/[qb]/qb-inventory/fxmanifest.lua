@@ -1,37 +1,64 @@
 fx_version 'cerulean'
 game 'gta5'
-lua54 'yes'
-author 'Kakarot'
-description 'Player inventory system providing a variety of features for storing and managing items'
-version '2.0.0'
+
+author "Pappu"
+description 'pappu-inventorynpnp'
+version '1.0.4'
 
 shared_scripts {
-    '@qb-core/shared/locale.lua',
-    'locales/en.lua',
-    'locales/*.lua',
-    'config/*.lua',
+    'config.lua',
+    '@qb-weapons/config.lua'
 }
 
-client_scripts {
-    'client/main.lua',
-    'client/drops.lua',
-    'client/vehicles.lua',
-}
+lua54 'yes'
 
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
     'server/main.lua',
-    'server/functions.lua',
-    'server/commands.lua',
+    -- 'server/visual.lua',
 }
 
-ui_page 'html/index.html'
+server_exports {
+    'LoadInventory',
+    'SaveInventory',
+    'GetTotalWeight',
+    'GetSlotsByItem',
+    'GetFirstSlotByItem',
+    'AddItem',
+    'RemoveItem',
+    'GetItemBySlot',
+    'GetItemByName',
+    'GetItemsByName',
+    'ClearInventory',
+    'SetInventory',
+    'SetItemData',
+    'HasItem',
+    'UseItem',
+    'OpenInventory',
+    'OpenInventoryById',
+    'addTrunkItems',
+    'addGloveboxItems',
+    'CreateShop',
+    'OpenShop'
+}
+
+client_scripts {
+    'client/main.lua',
+}
+
+ui_page {
+    'nui/pappunp.html'
+}
 
 files {
-    'html/index.html',
-    'html/main.css',
-    'html/app.js',
-    'html/images/*.png',
+    'nui/pappunp.html',
+    'nui/css/main.css',
+    'nui/js/app.js',
+    'nui/images/*.svg',
+    'nui/images/*.png',
+    'nui/images/*.jpg',
+    'nui/inventory_images/*.png',
+    'nui/ammo_images/*.png',
+    'nui/attachment_images/*.png',
+    'nui/*.ttf'
 }
-
-dependency 'qb-weapons'

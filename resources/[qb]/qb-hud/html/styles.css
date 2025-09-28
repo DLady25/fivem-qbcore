@@ -22,7 +22,7 @@ div#openmenu {
     color: rgb(255, 255, 255) !important;
 }
 .bg-active-tab {
-    background: rgb(23 23 23) !important;
+    background: rgb(25 25 25) !important;
 }
 .bg-panel {
     background: rgb(30 30 30) !important;
@@ -53,19 +53,19 @@ div#openmenu {
     color: rgb(0, 0, 0) !important;
 }
 .bg-bgbutton {
-    background: rgb(220 20 60) !important;
+    background: #3bd2a8 !important;
 }
 .q-checkbox__inner {
     color: rgb(255 255 255 / 70%) !important;
 }
 .text-checkbox {
-    color: rgb(220 20 60) !important;
+    color: #3bd2a8 !important;
 }
 .q-checkbox__svg {
     color: rgb(0, 0, 0) !important;
 }
 .q-checkbox__inner--truthy .q-checkbox__bg {
-    box-shadow: 0px 0px 3px 3px rgb(220 20 60 / 15%) !important;
+    box-shadow: 0px 0px 3px 3px #3bd2a776 !important;
 } /* if you want the checkboxes to have a glow/shadow */
 .text-toggleicons {
     color: rgb(0, 0, 0) !important;
@@ -130,8 +130,12 @@ div#q-loading-bar {
     color: rgb(0, 0, 0) !important;
 }
 .text-gauge {
-    color: rgb(255, 255, 255) !important;
+    color: #3bd2a8 !important;
 }
+.text-bgauge {
+    color: rgb(70, 70, 70) !important;
+}
+
 
 #main-container {
     width: 100%;
@@ -151,7 +155,7 @@ div#q-loading-bar {
 #bank {
     font-family: "Pricedown Bl", sans-serif;
     text-align: right;
-    color: #00ac31;
+    color: #13772d;
     text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.7), 1px -1px 0 rgba(0, 0, 0, 0.7), -1px 1px 0 rgba(0, 0, 0, 0.7), 1px 1px 0 rgba(0, 0, 0, 0.7);
 }
 
@@ -159,7 +163,7 @@ div#q-loading-bar {
     font-size: 50px;
     font-family: "Pricedown Bl", sans-serif;
     text-align: right;
-    color: #00ac31;
+    color: #13772d;
     text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.7), 1px -1px 0 rgba(0, 0, 0, 0.7), -1px 1px 0 rgba(0, 0, 0, 0.7), 1px 1px 0 rgba(0, 0, 0, 0.7);
 }
 
@@ -184,7 +188,7 @@ div#q-loading-bar {
     position: absolute;
     display: flex;
     left: 3vh;
-    bottom: 0.2vw;
+    bottom: 0.8vh;
 }
 
 .q-ml-xl {
@@ -193,14 +197,18 @@ div#q-loading-bar {
 
 /* Vehicle HUD */
 
-speed:after {
-    content: "MPH"; /* If using KPH change this content from MPH */
+#speed:after {
+    content: "KPH"; /* If using KPH change this content from MPH */
     display: block;
-    padding-top: 3px;
-    padding-left: 2px;
-    padding-right: 2px;
+    position: absolute;
+    font-family: 'Gravitica', sans-serif;
+    color: rgba(255, 255, 255, 0.873);
+    top: -0.4vh;
+    left: 2vh;
     padding-bottom: 8px;
     font-weight: 900;
+    font-size: 7px;
+    text-shadow: none;
 }
 
 altitude:after {
@@ -212,14 +220,20 @@ altitude:after {
     font-weight: 900;
 }
 
-speed {
+@font-face {
+    font-family: 'Gravitica';
+    src: url('https://res.cloudinary.com/davecbj4z/raw/upload/v1686655001/ckhans-fonts-gravitica-light-demo_xrit7c.otf');
+}
+
+#speed {
     transform: rotate(150deg);
-    font-size: 2.4vh;
-    position: fixed;
-    color: #fff;
+    font-size: 1.9vh;
+    position: absolute;
+    font-family: 'Gravitica', sans-serif;
+    color: #8f8f8f;
     text-align: center;
     font-weight: 600;
-    text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.7), 1px -1px 0 rgba(0, 0, 0, 0.7), -1px 1px 0 rgba(0, 0, 0, 0.7), 1px 1px 0 rgba(0, 0, 0, 0.7);
+    text-shadow: -0.5px 0 black, 0 0.5px black, 0.5px 0 black, 0 -0.5px black;
 }
 
 altitude {
@@ -230,32 +244,6 @@ altitude {
     text-align: center;
     font-weight: 600;
     text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.7), 1px -1px 0 rgba(0, 0, 0, 0.7), -1px 1px 0 rgba(0, 0, 0, 0.7), 1px 1px 0 rgba(0, 0, 0, 0.7);
-}
-
-.border {
-    bottom: 7.9%;
-    left: 1.3%;
-    width: 0%;
-    text-align: center;
-}
-
-.square {
-    bottom: 6.3%;
-    width: 29vh;
-    height: 18.5vh;
-    border: 4px solid #bababa;
-    position: absolute;
-    display: inline-block;
-}
-
-.circle {
-    bottom: 6.9%;
-    width: 27vh;
-    height: 22.9vh;
-    border: 4px solid #bababa;
-    position: absolute;
-    display: inline-block;
-    border-radius: 50%;
 }
 
 /* Animation */
@@ -284,23 +272,25 @@ altitude {
 }
 
 /* Compass */
+
+#baseplate-container {
+    background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.3) 20%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0) 60%, rgba(0,0,0,0) 100%);
+}
+
 .baseplate {
     position: relative;
     margin: 0 auto;
-    top: -0.8vh;
-    width: 150px;
+    width: 400px;
     height: auto;
 }
 
 .street-container {
     position: relative;
-    top: 0.5vh;
+    top: 0.7vh;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 1.4vh;
-    letter-spacing: 0.7px;
     text-decoration: none;
     font-style: normal;
-    font-variant: small-caps;
     text-transform: none;
     font-weight: 800;
     text-shadow: 0 0 1px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.6);
@@ -309,37 +299,37 @@ altitude {
 .street1 {
     position: absolute;
     margin: 0 auto;
-    right: 55%;
+    right: 62%;
     text-align: right !important;
-    color: rgb(255, 255, 255);
+    color: #3bd2a8;
 }
 
 .street2 {
     position: absolute;
     margin: 0 auto;
-    left: 55%;
+    left: 62%;
     text-align: left !important;
-    color: rgb(255, 255, 255);
+    color: #3bd2a8;
 }
 
 .pointer {
     position: absolute;
     margin: 0 auto;
-    top: -2%;
+    top: -15%;
     left: 0;
     right: 0;
     font-family: "Yantramanav", sans-serif;
-    color: rgb(255, 255, 255);
+    color: #13eaba;
     font-size: 2.2vh;
     text-align: center;
-    text-shadow: 0 0 1px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.6);
+    text-shadow: rgba(59,210,167,1) 0px 0px 5px;
     z-index: 9999;
 }
 
 .degrees {
     position: absolute;
     margin: 0 auto;
-    top: 80%;
+    top: 100%;
     left: 0;
     right: 0;
     opacity: 0.8;
@@ -358,22 +348,119 @@ altitude {
     font-family: "Yantramanav", sans-serif;
     font-size: 0.35vh;
     font-weight: 700;
-    text-shadow: 0 0 1px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.6);
 }
 
 .bearing {
     position: relative;
     width: 100%;
-    top: -0.5vh;
-    height: 3.5vh;
+    height: 1.5vh;
     padding-left: 0.12vw;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 2.3vh;
-    letter-spacing: 0.7px;
+    font-size: .6vh;
     text-decoration: none;
     font-style: normal;
     font-variant: small-caps;
     text-transform: none;
-    font-weight: 600;
-    text-shadow: 0 0 1px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.6);
+}
+
+
+
+:root {
+  --radio-bar-color: #84898f; /* Default color */
+  --talk-bar-color: #84898f; /* Default color */
+}
+
+
+
+/* Fuel Counter */
+#progressBar {
+    width: 11px; /* Adjust as needed */
+    height: 80px; /* Adjust as needed */
+    position: relative;
+    border-width: 3px; /* Adjust as needed */
+    border-style: solid;
+    border-color: #2b2b2b74;
+    background: #2b2b2b9a;
+}
+  
+#progressBar .progress {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 0%; /* Start with 0% height */
+    background: #ffffff;
+    transition: height 0.5s;
+    box-sizing: border-box; /* Include padding and border in width */
+}
+
+
+#SeatbeltIcon {
+    position: absolute;
+    transition: opacity 1s ease-in-out;
+    top: -11.2vh; 
+    width: 20px; 
+    height: 20px;
+}
+  
+
+
+/* End Fuel Counter */
+
+
+/* RPM Counter*/
+.container {
+    width: 100%;
+    position: relative;
+}
+
+.item {
+    width: 4px;
+    /*border: 1px solid #5f6167;*/
+    background-color: rgb(70, 70, 70);
+    border-radius: 10px;
+    margin-left: 4px;
+    float: left;
+    display: block;
+    height: 30px;
+}
+
+.filled {
+    background-color: #3bd2a8 !important;
+}
+
+.critical {
+    background-color: #cc4d53 !important;
+}
+
+
+.colorcreator {
+    color: rgba(29, 136, 186, 0.352);
+}
+
+/* End of RPM Counter*/
+
+
+#gearBox {
+    position: absolute;
+    width: 32px;
+    height: 43px;
+    border-radius: 3px;
+    background-color: #3bd2a8;
+    /* Add an inside shadow and an outside glow */
+    box-shadow: inset 0 0 10px 1px #000000df, 0 0 6px #3bd2a8;
+}
+  
+
+/* Gears Counter*/
+
+#gear {
+    font-size: 28px;
+    font-weight: 500;
+    color: rgb(21, 20, 24);
+    text-align: center;
+}
+
+
+#god {
+    color: #287fcc;
 }

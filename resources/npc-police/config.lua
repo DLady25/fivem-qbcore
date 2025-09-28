@@ -6,16 +6,16 @@ Config = Config or {}
 
 -- ===== POLICING BEHAVIOR TUNING =====
 Config.PoliceAmbient = {
-    enableFoot = true,               -- spawns de policiais a pé (apenas fora de ocorrências)
+    enableFoot = false,               -- spawns de policiais a pé (apenas fora de ocorrências)
     enableVehicle = true,            -- spawns de viaturas (2 policiais cada)
 
     -- limites do pool “ambient”
-    maxFoot = 8,                     -- máximo de policiais a pé ativos
+    maxFoot = 0,                     -- máximo de policiais a pé ativos
     maxVehicle = 6,                  -- máximo de viaturas ativas (cada uma com 2 policiais)
 
     -- distâncias de spawn (sempre longe do player)
-    spawnMinDist = 180.0,            -- nunca spawnar mais perto que isso do player
-    spawnMaxDist = 320.0,
+    spawnMinDist = 153.0,            -- nunca spawnar mais perto que isso do player
+    spawnMaxDist = 272.0,
 
     -- patrulha
     footWanderRadius = 25.0,         -- “bolha” onde o policial a pé circula
@@ -47,7 +47,7 @@ Config.Response = {
 
 -- regras de despawn seguro (nunca sumir “na cara” do player)
 Config.SafeDespawn = {
-    minDistance = 180.0,             -- só despawnar se >= isso do player
+    minDistance = 153.0,             -- só despawnar se >= isso do player
     onlyWhenNotVisible = true        -- e fora do FOV/streaming do player
 }
 

@@ -464,6 +464,60 @@ end
 
 ---Create Server Callback
 ---@param name string
+local inventoryResources = { 'pappu-inventorynp', 'qb-inventory' }
+local cachedInventoryResource
+local missingInventoryExports = {}
+
+local function tryInventoryExport(resource, exportName, ...)
+    if GetResourceState(resource) ~= 'started' then return false end
+    local target = exports[resource]
+    if not target then return false end
+    local func = target[exportName]
+    if type(func) ~= 'function' then return false end
+    local ok, result = pcall(func, target, ...)
+    if not ok then return false end
+    cachedInventoryResource = resource
+    missingInventoryExports[exportName] = nil
+    return true, result
+end
+
+function QBCore.Functions.GetInventoryResource()
+    if cachedInventoryResource and GetResourceState(cachedInventoryResource) == 'started' then
+        return cachedInventoryResource
+    end
+    for _, resource in ipairs(inventoryResources) do
+        if GetResourceState(resource) == 'started' then
+            return resource
+        end
+    end
+    return nil
+end
+
+function QBCore.Functions.CallInventoryExport(exportName, ...)
+    if cachedInventoryResource then
+        local success, result = tryInventoryExport(cachedInventoryResource, exportName, ...)
+        if success then return true, result end
+        cachedInventoryResource = nil
+    end
+
+    for _, resource in ipairs(inventoryResources) do
+        local success, result = tryInventoryExport(resource, exportName, ...)
+        if success then return true, result end
+    end
+
+    if not missingInventoryExports[exportName] then
+        missingInventoryExports[exportName] = true
+        local message = string.format('[qb-core] inventory export %s not available', exportName)
+        if QBCore.Debug then
+            QBCore.Debug(message)
+        else
+            print(message)
+        end
+    end
+
+    return false, nil
+end
+
 ---@param cb function
 function QBCore.Functions.CreateCallback(name, cb)
     QBCore.ServerCallbacks[name] = cb
@@ -508,8 +562,7 @@ end
 ---@param source any
 ---@param item string
 function QBCore.Functions.UseItem(source, item)
-    if GetResourceState('qb-inventory') == 'missing' then return end
-    exports['qb-inventory']:UseItem(source, item)
+    QBCore.Functions.CallInventoryExport('UseItem', source, item)
 end
 
 ---Kick Player
@@ -518,7 +571,7 @@ end
 ---@param setKickReason boolean
 ---@param deferrals boolean
 function QBCore.Functions.Kick(source, reason, setKickReason, deferrals)
-    reason = '\n' .. reason .. '\n🔸 Check our Discord for further information: ' .. QBCore.Config.Server.Discord
+    reason = '\n' .. reason .. '\nðŸ”¸ Check our Discord for further information: ' .. QBCore.Config.Server.Discord
     if setKickReason then
         setKickReason(reason)
     end
@@ -705,8 +758,9 @@ end
 ---@param amount number
 ---@return boolean
 function QBCore.Functions.HasItem(source, items, amount)
-    if GetResourceState('qb-inventory') == 'missing' then return end
-    return exports['qb-inventory']:HasItem(source, items, amount)
+    local success, result = QBCore.Functions.CallInventoryExport('HasItem', source, items, amount)
+    if success then return result end
+    return false
 end
 
 ---Notify
@@ -742,3 +796,8 @@ for functionName, func in pairs(QBCore.Functions) do
 end
 -- Access a specific function directly:
 -- exports['qb-core']:Notify(source, 'Hello Player!')
+
+
+
+
+

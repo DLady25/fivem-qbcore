@@ -146,8 +146,8 @@ end
 -- carrega línguas
 local locales = {}
 
-locales['en']    = load('return require("qb-core.locales.en")')()
-locales['pt-br'] = load('return require("qb-core.locales.pt-br")')()
+locales['en']    = load('return require("qb-core.locale.en")')()
+locales['pt-br'] = load('return require("qb-core.locale.pt-br")')()
 
 -- instância global usada pelo framework
 Lang = locales['pt-br']  -- << defina aqui o padrão
